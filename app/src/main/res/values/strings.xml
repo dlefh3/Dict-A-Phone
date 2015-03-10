@@ -4,4 +4,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="SearchText">Search:</string>
+    <string name="title">Dict-A-Phone</string>
+    <string name="searchHint">Enter a word to look up</string>
 </resources>
