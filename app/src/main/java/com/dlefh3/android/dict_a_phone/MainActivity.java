@@ -19,8 +19,10 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.wordsapi.www.client.JsonUtil;
 import com.wordsapi.www.wordsapi.api.WordsApi;
+import com.wordsapi.www.wordsapi.model.Definition;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -72,8 +74,8 @@ public class MainActivity extends ActionBarActivity {
                             //((TextView) findViewById(R.id.textView)).setText(response.toString());
                             try
                             {
-                                List details = JsonUtil.getJsonMapper().readValue(response.getString("definitions"), List.class);
-
+                                List<Definition> details = JsonUtil.getJsonMapper().readValue(response.getString("definitions"),
+                                        TypeFactory.defaultInstance().constructCollectionType(List.class, Definition.class));
                                 ((TextView) findViewById(R.id.textView)).setText(details.toString());
                             }
                             catch (Error e) {
