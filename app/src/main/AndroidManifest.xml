@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dlefh3.android.dict_a_phone" >
+    <uses-sdk android:minSdkVersion="10"
+              android:targetSdkVersion="19" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
+        android:versionCode="2"
+        android:versionName="1.1"
         android:name="AppController"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

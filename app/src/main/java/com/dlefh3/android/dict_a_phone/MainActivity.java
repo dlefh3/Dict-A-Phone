@@ -1,10 +1,13 @@
 package com.dlefh3.android.dict_a_phone;
 
+import android.app.ListActivity;
+import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -21,7 +24,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.wordsapi.www.client.JsonUtil;
-import com.wordsapi.www.wordsapi.api.WordsApi;
 import com.wordsapi.www.wordsapi.model.Definition;
 
 import org.json.JSONException;
@@ -29,15 +31,26 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import adapter.CustomArrayAdapter;
+import adapter.DefinitionItemObject;
 
-public class MainActivity extends ActionBarActivity {
+
+public class MainActivity extends ListActivity {
 
     public static ObjectMapper mapper;
-    private TextView txtView;
+    private TextView txtView, resultCountTextView, resultLabelTextView;
+    private EditText searchEditText;
     private ImageButton imgButton;
+    final String accessToken = "PecbHqRppTmshQ2O36b1FWa0OdWRp1UngatjsnKtJJbznLjveV";
+    String word;
+    String detail = "definitions";
+    final String urlBase = "https://wordsapiv1.p.mashape.com/words/";
+    private CustomArrayAdapter customArrayAdapter = null;
+    List<Definition> definitions = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,70 +59,82 @@ public class MainActivity extends ActionBarActivity {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
+        customArrayAdapter = new CustomArrayAdapter(MainActivity.this);
+        setListAdapter(customArrayAdapter);
+
         txtView = (TextView) findViewById(R.id.textView);
+        resultCountTextView = (TextView) findViewById(R.id.resultCountTextView);
+        resultLabelTextView = (TextView) findViewById(R.id.resultLabelTextView);
+        searchEditText = (EditText) findViewById(R.id.searchEditText);
         imgButton = (ImageButton) findViewById(R.id.searchImageButton);
-        imgButton.setOnClickListener(new View.OnClickListener()
+
+        View.OnClickListener searchOnClickListener = new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                WordsApi wordsApi = new WordsApi();
-                final String accessToken = "PecbHqRppTmshQ2O36b1FWa0OdWRp1UngatjsnKtJJbznLjveV";
-                final String word = String.valueOf(((EditText) findViewById(R.id.searchEditText)).getText());
-                String detail = "definitions";
+                InputMethodManager imm = (InputMethodManager)getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
+                txtView.setText("");
+                //resultCountTextView.setVisibility(View.INVISIBLE);
+                //resultLabelTextView.setVisibility(View.INVISIBLE);
+                word = String.valueOf(((EditText) findViewById(R.id.searchEditText)).getText());
+                String requestUrl = urlBase+word+"/" + detail;
                 Response.ErrorListener errorListener = new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        ((TextView) findViewById(R.id.textView)).setText(
-                                new StringBuilder().append("No Results for \"").append(word).append("\"").toString());
+                        txtView.setText("No Results for \"" + word + "\"");
+                        resultCountTextView.setText(getString(R.string.results_none));
+                        Log.e("Response Error", error.networkResponse.toString());
+
+                        customArrayAdapter.clear();
                     }
                 };
-                    //DetailsResponse response = wordsApi.details(accessToken, word, detail);
+                Request request = new JsonObjectRequest(requestUrl, null,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                //((TextView) findViewById(R.id.textView)).setText(response.toString());
+                                try
+                                {
+                                    definitions = JsonUtil.getJsonMapper().readValue(response.getString("definitions"),
+                                            TypeFactory.defaultInstance().constructCollectionType(List.class, Definition.class));
+                                    generateData();
+                                    if (definitions != null)
+                                    {
+                                        resultCountTextView.setText(String.valueOf(definitions.size()));
+                                    }
+                                    //((TextView) findViewById(R.id.textView)).setText(definitions.toString());
+                                }
+                                catch (JsonMappingException e) {
+                                    e.printStackTrace();
+                                } catch (JsonParseException e) {
+                                    e.printStackTrace();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
 
-                Request request = new JsonObjectRequest(
-                    "https://wordsapiv1.p.mashape.com/words/"+word+"/definitions", null,
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            //((TextView) findViewById(R.id.textView)).setText(response.toString());
-                            try
-                            {
-                                List<Definition> details = JsonUtil.getJsonMapper().readValue(response.getString("definitions"),
-                                        TypeFactory.defaultInstance().constructCollectionType(List.class, Definition.class));
-                                ((TextView) findViewById(R.id.textView)).setText(details.toString());
                             }
-                            catch (Error e) {
-                            } catch (JsonMappingException e) {
+                        }, errorListener){
 
-                                e.printStackTrace();
-                            } catch (JsonParseException e) {
-                                e.printStackTrace();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    }, errorListener){
-
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    Map<String, String> pHeaders = super.getHeaders();
-                    Map<String, String> headers = new HashMap<String, String>();
-                    headers.putAll(pHeaders);
-                    headers.put("api-key", "API_KEY_GOES_HERE");
-                    headers.put("X-Mashape-Key", accessToken);
-                    headers.put("Accept", "application/json");
-                    return headers;
-                }
-            };
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        Map<String, String> pHeaders = super.getHeaders();
+                        Map<String, String> headers = new HashMap<String, String>();
+                        headers.putAll(pHeaders);
+                        headers.put("X-Mashape-Key", accessToken);
+                        headers.put("Accept", "application/json");
+                        return headers;
+                    }
+                };
                 //AppController.addRequestToQueue(jsonObjectRequest);
                 AppController.addRequestToQueue(request);
-
-
             }
-        });
+        };
+        imgButton.setOnClickListener(searchOnClickListener);
 
     }
 
@@ -134,5 +159,20 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    private void generateData()
+    {
+        if (definitions != null)
+        {
+            customArrayAdapter.clear();
+            for(Iterator<Definition> d = definitions.iterator(); d.hasNext();)
+            {
+                Definition definition = d.next();
+                DefinitionItemObject definitionItemObject = new DefinitionItemObject(
+                        definition.getDefinition(),definition.getPartOfSpeech() );
+                customArrayAdapter.add(definitionItemObject);
+            }
+            customArrayAdapter.notifyDataSetChanged();
+        }
     }
 }

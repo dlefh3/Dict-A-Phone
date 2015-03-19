@@ -6,4 +6,6 @@
     <string name="SearchText">Search:</string>
     <string name="title">Dict-A-Phone</string>
     <string name="searchHint">Enter a word to look up</string>
+    <string name="result_label">Results:</string>
+    <string name="results_none">None</string>
 </resources>
