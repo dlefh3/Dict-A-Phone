@@ -18,8 +18,6 @@ public class FrontPage extends Activity
 {
     Button searchButton, optionsButton, aboutButton;
 
-    public final String SAVED_COLOR = getString(R.string.saved_preferences_file);
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -60,7 +58,7 @@ public class FrontPage extends Activity
     protected void onResume()
     {
         super.onResume();
-        SharedPreferences savedColor = getSharedPreferences(SAVED_COLOR, 0);
+        SharedPreferences savedColor = getSharedPreferences(getString(R.string.pref_file), 0);
         int bgColor = savedColor.getInt("bg_color", 0);
         if(bgColor != 0)
             ((LinearLayout)findViewById(R.id.front_page_layout)).setBackgroundColor(bgColor);

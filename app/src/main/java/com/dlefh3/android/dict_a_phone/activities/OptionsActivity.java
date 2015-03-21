@@ -19,7 +19,7 @@ import com.dlefh3.android.dict_a_phone.R;
 
 public class OptionsActivity extends Activity
 {
-    public final String SAVED_COLOR = getString(R.string.saved_preferences_file);
+
     int red, blue, green, alpha;
     SeekBar redSeekBar, blueSeekBar, greenSeekBar, alphaSeekBar;
     EditText redEditText, blueEditText, greenEditText, alphaEditText;
@@ -81,7 +81,7 @@ public class OptionsActivity extends Activity
                         int newBG = Color.rgb(redSeekBar.getProgress(),
                                 greenSeekBar.getProgress(), blueSeekBar.getProgress());
 
-                        SharedPreferences savedColor = getSharedPreferences(SAVED_COLOR, 0);
+                        SharedPreferences savedColor = getSharedPreferences(getString(R.string.pref_file), 0);
                         SharedPreferences.Editor editor = savedColor.edit();
 
                         editor.putInt("bg_color", newBG);
@@ -89,6 +89,7 @@ public class OptionsActivity extends Activity
                         relativeLayout.setBackgroundColor(newBG);
                     }
                 });
+
                 AlertDialog dialog = builder.create();
                 dialog.show();
 

@@ -36,6 +36,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -43,7 +45,7 @@ import java.util.Map;
 
 
 public class MainActivity extends ListActivity {
-    public final String SAVED_COLOR = getString(R.string.saved_preferences_file);
+
     public static ObjectMapper mapper;
     private TextView txtView, resultCountTextView, resultLabelTextView;
     private EditText searchEditText;
@@ -95,7 +97,7 @@ public class MainActivity extends ListActivity {
     protected void onResume()
     {
         super.onResume();
-        SharedPreferences savedColor = getSharedPreferences(SAVED_COLOR, 0);
+        SharedPreferences savedColor = getSharedPreferences(getString(R.string.pref_file), 0);
         int bgColor = savedColor.getInt("bg_color", 0);
         if(bgColor != 0)
             ((LinearLayout)findViewById(R.id.main_activity_layout)).setBackgroundColor(bgColor);
@@ -130,7 +132,15 @@ public class MainActivity extends ListActivity {
             //resultCountTextView.setVisibility(View.INVISIBLE);
             //resultLabelTextView.setVisibility(View.INVISIBLE);
             word = String.valueOf(((EditText) findViewById(R.id.searchEditText)).getText());
+            try
+            {
+                word = URLEncoder.encode(word, "UTF-8");
+            } catch (UnsupportedEncodingException e)
+            {
+                e.printStackTrace();
+            }
             String requestUrl = urlBase+word+"/" + detail;
+
             Response.ErrorListener errorListener = new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
