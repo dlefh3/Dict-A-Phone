@@ -8,4 +8,14 @@
     <string name="searchHint">Enter a word to look up</string>
     <string name="result_label">Results:</string>
     <string name="results_none">None</string>
+    <string name="title_activity_front_page">Dict-A-Phone</string>
+    <string name="about_button">About</string>
+    <string name="options_button">Options</string>
+    <string name="launch_search_button">Find Definitions</string>
+    <string name="subtitle">a dictionary on your phone</string>
+    <string name="title_activity_options">OptionsActivity</string>
+    <string name="options_label">Options</string>
+    <string name="red_label">Red</string>
+    <string name="blue_label">Blue</string>
+    <string name="green_label">Green</string>
 </resources>

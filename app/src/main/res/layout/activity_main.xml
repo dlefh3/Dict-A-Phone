@@ -17,7 +17,7 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         android:paddingBottom="@dimen/activity_vertical_margin"
         tools:context=".MainActivity"
-        android:background="@color/projectBackgroundColor"
+
         android:columnCount="6"
         android:rowCount="2">
 
@@ -37,16 +37,19 @@
             android:id="@+id/searchEditText"
             android:layout_row="1"
             android:layout_column="1"
-            android:hint="@string/searchHint" />
+            android:hint="@string/searchHint"
+            android:inputType="textAutoComplete|text"
+            android:imeOptions="actionSearch"
+            android:lines="1"/>
 
         <ImageButton
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:id="@+id/searchImageButton"
             android:layout_row="1"
             android:layout_column="2"
             android:src="@drawable/ic_search"
-            android:background="@color/projectBackgroundColor"
+            android:background="@android:color/transparent"
             android:clickable="true"
             android:longClickable="true"/>
 
