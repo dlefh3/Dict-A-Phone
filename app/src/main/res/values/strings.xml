@@ -18,4 +18,10 @@
     <string name="red_label">Red</string>
     <string name="blue_label">Blue</string>
     <string name="green_label">Green</string>
+    <string name="welcome_toast">Welcome to Dict-A-Phone!</string>
+    <string name="set_bg_color">Set BG Color</string>
+    <string name="reset_bg_color">Reset BG Color</string>
+    <string name="back_button">Back</string>
+    <string name="custom_bg_value_key">custom_bg</string>
+    <string name="saved_preferences_file">SavedColor</string>
 </resources>

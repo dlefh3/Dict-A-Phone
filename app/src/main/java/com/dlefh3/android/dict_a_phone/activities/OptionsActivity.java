@@ -1,9 +1,15 @@
 package com.dlefh3.android.dict_a_phone.activities;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -11,13 +17,15 @@ import android.widget.TextView;
 
 import com.dlefh3.android.dict_a_phone.R;
 
-public class OptionsActivity extends ActionBarActivity
+public class OptionsActivity extends Activity
 {
+    public final String SAVED_COLOR = getString(R.string.saved_preferences_file);
     int red, blue, green, alpha;
     SeekBar redSeekBar, blueSeekBar, greenSeekBar, alphaSeekBar;
     EditText redEditText, blueEditText, greenEditText, alphaEditText;
     TextView previewText;
     RelativeLayout relativeLayout;
+    Button backButton, setBGColorButton;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -36,8 +44,56 @@ public class OptionsActivity extends ActionBarActivity
 
         previewText = (TextView) findViewById(R.id.previewTextView);
 
-        previewText.setBackgroundColor(Color.rgb(2, greenSeekBar.getProgress(), blueSeekBar.getProgress()));
+        backButton = (Button) findViewById(R.id.backButton);
+        backButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent i = new Intent(OptionsActivity.this, FrontPage.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(i);
+            }
+        });
+        setBGColorButton = (Button) findViewById(R.id.setBGColorButton);
+        setBGColorButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
 
+
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(OptionsActivity.this);
+                builder.setTitle("Confirm").setMessage("Are you sure you want to change the " +
+                        "background color?").setNegativeButton("No", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+
+                    }
+                }).setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        int newBG = Color.rgb(redSeekBar.getProgress(),
+                                greenSeekBar.getProgress(), blueSeekBar.getProgress());
+
+                        SharedPreferences savedColor = getSharedPreferences(SAVED_COLOR, 0);
+                        SharedPreferences.Editor editor = savedColor.edit();
+
+                        editor.putInt("bg_color", newBG);
+                        editor.commit();
+                        relativeLayout.setBackgroundColor(newBG);
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+            }
+        });
         redSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
         {
             @Override

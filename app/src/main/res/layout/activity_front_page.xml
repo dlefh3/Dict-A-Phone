@@ -10,7 +10,7 @@
                 android:background="@color/projectBackgroundColor"
                 android:columnCount="3"
                 android:rowCount="3"
-
+                android:id="@+id/front_page_layout"
                 android:padding="5dp"
                 android:orientation="vertical"
                 android:gravity="top|center">
